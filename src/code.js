@@ -5,6 +5,8 @@ var canvas;
 var ctx;
 
 var deltaTime = 0;
+var targetDT = (1 / 60) * 1000;
+var targetDTSeconds = (1 / 60);
 
 var world   = null;
 var gravity = null;
@@ -49,7 +51,7 @@ function Start ()
     // ------------------------------------------------
     // BOAT
 
-    boat = new Boat(0.5, 0.3);
+    boat = new Boat(0.1, 0.3, KEY_LEFT, KEY_RIGHT);
     boat.Start();
 }
 
@@ -57,7 +59,7 @@ function Loop ()
 {
     requestAnimationFrame(Loop);
 
-    Update(deltaTime / 1000);
+    Update(targetDTSeconds);
     Draw();
 }
 

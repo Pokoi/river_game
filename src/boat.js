@@ -1,19 +1,24 @@
 class Boat {
 
 	/// Initialization of members
-	constructor(_width, _height)
+	constructor(_width, _height, _left_input, _right_input)
 	{
 
-		this.img                   = null   ; 
-		this.body                  = null   ; 
-		this.speed                 = 0.0    ;
-		this.engine_on             = false  ;
-		this.rotation_speed        = 1.4    ; 
-		this.restore_rotation_speed= 4.0    ; 
-		this.width                 = _width ;
-		this.height                = _height;
-		this.director_body         = null   ;
-		this.engine_body           = null   ;
+		this.img                   = null         ; 
+		this.body                  = null         ; 
+		this.speed                 = 1            ;
+		this.rotation_speed        = 1            ; 
+		this.restore_rotation_speed= 4.0          ;
+
+		this.width                 = _width       ;
+		this.height                = _height      ;
+
+		this.director_body         = null         ;
+		this.engine_body           = null         ;
+		this.bodies                = []           ;
+
+		this.left_input            = _left_input  ;
+		this.right_input           = _right_input ;
 	} 
 
 	/// At the first frame of this object
@@ -47,7 +52,7 @@ class Boat {
 	InitializeDirectorBody()
 	{
 
-		this.director_body    = CreateBox(world, 0.5, 1.1, 0.05, 0.1, {});
+		this.director_body    = CreateBox(world, this.body.GetPosition().x, 1.1, 0.05, 0.1, {});
 		let front_joint_def   = new b2RevoluteJointDef();
 
 		front_joint_def.Initialize (this.body, this.director_body, this.director_body.GetWorldCenter());
@@ -58,18 +63,21 @@ class Boat {
 		front_joint_def.enableMotor    = true;
 
 		this.director_body.joint       = world.CreateJoint(front_joint_def);
+		
+		this.bodies.push(this.director_body);
 	}
 
 	/// Initialization of the parameters of the engine body
 	InitializeEngineBody()
-	{
-
+	{		
+		this.engine_body   = CreateBox(world, this.body.GetPosition().x, 0.4, 0.05, 0.1, {});
 		let back_joint_def = new b2PrismaticJointDef();
-		this.engine_body   = CreateBox(world, 0.5, 0.4, 0.05, 0.1, {});
 
 		back_joint_def.Initialize(this.body, this.engine_body, this.engine_body.GetWorldCenter(), new b2Vec2(1,0));
 		back_joint_def.enableLimit = true;
 		this.engine_body.joint     = world.CreateJoint(back_joint_def);
+		
+		this.bodies.push(this.engine_body);
 	}
 
 	//=============================================================================
@@ -82,12 +90,13 @@ class Boat {
 		let rotation_speed = 0.0;
 		let rotation_angle = 0.0;
 
-		if(input.isKeyPressed(KEY_LEFT))
+		if(input.isKeyPressed(this.left_input))
 		{
 			rotation_angle += this.director_body.joint.m_upperAngle;
 			rotation_speed  = this.rotation_speed;
+			
 		}
-		else if(input.isKeyPressed(KEY_RIGHT))
+		else if(input.isKeyPressed(this.right_input))
 		{
 			rotation_angle += this.director_body.joint.m_lowerAngle;
 			rotation_speed  = this.rotation_speed;
@@ -100,12 +109,22 @@ class Boat {
 
 		let joint            = this.director_body.joint;
 		let angle_difference = rotation_angle - joint.GetJointAngle();
+		joint.SetMotorSpeed(angle_difference * rotation_speed);
 	}
 
 	/// Apply the movement to the boat engine
 	BoatMovement()
 	{
-		let force = (this.engine_body.GetTransform().R.col2.Copy()).Multiply(this.speed);
-		this.engine_body.ApplyForce(force, this.engine_body.GetPosition());
+		for (var current_body in this.bodies)
+		{
+			let force_direction = current_body.GetTransform().R.col2.Copy();
+			force_direction.Multiply(this.speed);
+			this.director_body.ApplyForce(direction_1, this.director_body.GetPosition());
+		}
+		
+		
+		let direction_2 = this.engine_body.GetTransform().R.col2.Copy();
+		direction_2.Multiply(this.speed);
+		this.engine_body.ApplyForce(direction_2, this.engine_body.GetPosition());
 	}
 }

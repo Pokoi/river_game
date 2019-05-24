@@ -109,7 +109,7 @@ function CreateBall (world, x, y, radius, options)
 // Create a Box2D world object
 function CreateWorld (ctx, gravity)
 {
-	let doSleep = false;
+	let doSleep = true;
 	world = new b2World(gravity, doSleep);
  
 	// DebugDraw is used to create the drawing with physics
