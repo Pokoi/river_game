@@ -3,12 +3,11 @@ class Boat {
 	/// Initialization of members
 	constructor(_width, _height, _left_input, _right_input)
 	{
-
 		this.img                   = null         ; 
 		this.body                  = null         ; 
-		this.speed                 = 1            ;
-		this.rotation_speed        = 1            ; 
-		this.restore_rotation_speed= 4.0          ;
+		this.speed                 = 0.5          ;
+		this.rotation_speed        = 0.2          ; 
+		this.restore_rotation_speed= 0.4          ;
 
 		this.width                 = _width       ;
 		this.height                = _height      ;
@@ -52,7 +51,7 @@ class Boat {
 	InitializeDirectorBody()
 	{
 
-		this.director_body    = CreateBox(world, this.body.GetPosition().x, 1.1, 0.05, 0.1, {});
+		this.director_body    = CreateBox(world, this.body.GetPosition().x, this.body.GetPosition().y + this.height * 0.5, 0.05, 0.1, {});
 		let front_joint_def   = new b2RevoluteJointDef();
 
 		front_joint_def.Initialize (this.body, this.director_body, this.director_body.GetWorldCenter());
@@ -70,7 +69,7 @@ class Boat {
 	/// Initialization of the parameters of the engine body
 	InitializeEngineBody()
 	{		
-		this.engine_body   = CreateBox(world, this.body.GetPosition().x, 0.4, 0.05, 0.1, {});
+		this.engine_body   = CreateBox(world, this.body.GetPosition().x, this.body.GetPosition().y - this.height * 0.5, 0.05, 0.1, {});
 		let back_joint_def = new b2PrismaticJointDef();
 
 		back_joint_def.Initialize(this.body, this.engine_body, this.engine_body.GetWorldCenter(), new b2Vec2(1,0));
@@ -115,16 +114,12 @@ class Boat {
 	/// Apply the movement to the boat engine
 	BoatMovement()
 	{
-		for (var current_body in this.bodies)
+		for (let i in this.bodies)
 		{
+			let current_body    = this.bodies[i];
 			let force_direction = current_body.GetTransform().R.col2.Copy();
 			force_direction.Multiply(this.speed);
-			this.director_body.ApplyForce(direction_1, this.director_body.GetPosition());
-		}
-		
-		
-		let direction_2 = this.engine_body.GetTransform().R.col2.Copy();
-		direction_2.Multiply(this.speed);
-		this.engine_body.ApplyForce(direction_2, this.engine_body.GetPosition());
+			current_body.ApplyForce(force_direction, current_body.GetPosition());
+		}		
 	}
 }
