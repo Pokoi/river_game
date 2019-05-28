@@ -8,6 +8,7 @@ var deltaTime = 0;
 var targetDT = (1 / 60) * 1000;
 var targetDTSeconds = (1 / 60);
 
+var board   = null;
 var world   = null;
 var gravity = null;
 var boat    = null;
@@ -47,6 +48,13 @@ function Start ()
 {
     // create physics
     PreparePhysics(ctx)
+
+    // ------------------------------------------------
+    // CANVAS
+
+    ResizeCanvas();
+
+
 
     // ------------------------------------------------
     // BOAT
@@ -96,5 +104,11 @@ function PreparePhysics (ctx)
     gravity = new b2Vec2();
 
     world = CreateWorld(ctx, gravity);
+}
+
+function ResizeCanvas()
+{  
+    canvas.height = window.innerHeight - (2);
+    canvas.width  = canvas.height * (9/16);
 }
 

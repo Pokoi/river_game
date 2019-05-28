@@ -41,6 +41,24 @@ class RiverBank{
 		
 	}
 
+	AssignEdgeVertex(_last_vertex)
+	{
+		//----------------------
+		//  C ---------- D
+		//  |           /
+		//  |          /
+		//  |          \
+		//  B ---------- A
+		//-----------------------
+		
+		//A
+		this.vertex.push(_last_vertex);
+
+		//B
+		this.vertex.push(_last_vertex.x - canvas.width, _last_vertex.)
+
+	}
+
 	/// Send the object to the scene
 	SendToScene()
 	{
