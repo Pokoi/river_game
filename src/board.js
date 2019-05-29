@@ -9,5 +9,10 @@ class Board{
         else               this.width   =  _width;
         
     }
+
+    GenerateBoardTiles()
+    {
+    	
+    }
     
 }
