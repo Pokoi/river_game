@@ -23,9 +23,8 @@ class Boat {
 	/// At the first frame of this object
 	Start()
 	{
-
 		var boat_body_options = {'linearDamping': 10.0, 'angularDamping': 10.0};
-		this.body             = CreateBox(world, 0.75, 0.75, this.width, this.height, boat_body_options);
+		this.body             = CreateBox(world, canvas.width * 0.5 / scale, 0.75, this.width, this.height, boat_body_options);
 
 		this.InitializeDirectorBody();
 		this.InitializeEngineBody();

@@ -12,6 +12,7 @@ var board   = null;
 var world   = null;
 var gravity = null;
 var boat    = null;
+var camera  = null;
 
 window.requestAnimationFrame = (function (evt) {
     return window.requestAnimationFrame    ||
@@ -57,11 +58,16 @@ function Start ()
     // BOARD
     board = new Board();
     board.Start();
+
     // ------------------------------------------------
     // BOAT
-
     boat = new Boat(0.1, 0.3, KEY_LEFT, KEY_RIGHT);
     boat.Start();
+
+    // ------------------------------------------------
+    // CAMERA
+    camera = new Camera(boat);
+    camera.Start();
 }
 
 function Loop ()
@@ -79,11 +85,11 @@ function Update (deltaTime)
     // update physics
     // Step(timestep , velocity iterations, position iterations)
     world.Step(deltaTime, 8, 3);
-    world.ClearForces();
-
-    board.Update(deltaTime);
+    world.ClearForces();  
 
     boat.Update(deltaTime);
+    camera.Update(deltaTime);
+
 
     input.postUpdate();
 }
@@ -91,9 +97,14 @@ function Update (deltaTime)
 function Draw ()
 {
     // clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    ctx.clearRect(0, 0, canvas.width, canvas.height);    
+    
     board.Draw(ctx);
+
+    // camera transform: translate
+    ctx.save();
+    ctx.translate(-camera.position.x, -camera.position.y);    
+      
 
     // Transform the canvas coordinates to cartesians coordinates
     ctx.save();
@@ -101,6 +112,7 @@ function Draw ()
     ctx.scale(1, -1);
     world.DrawDebugData();
     ctx.restore();
+    
 }
 
 function PreparePhysics (ctx)

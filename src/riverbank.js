@@ -6,9 +6,9 @@ class RiverBank{
 		this.vertex       = []               ;
 		this.collider     = null             ;
 		this.active       = true             ;
-		this.height       = 200              ;
+		this.height       = canvas.height /2 ;
 		this.width        = canvas.width / 3 ;
-		this.random_range = this.width * 0.25; 
+		this.random_range = this.width * 0.35; 
 		
 		this.AssignEdgeVertex(_last_vertex);
 		this.GenerateInnerFace();
@@ -44,7 +44,9 @@ class RiverBank{
 
 		for(let i = 0; i < 3; i++)
 		{
-			let vertex = new Vector2((this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range)), this.GenerateRandomVertexComponent(last_y, last_y - ((i+1) * unit_size)));
+			let vertex = new Vector2((this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range)), 
+									this.GenerateRandomVertexComponent(last_y - (i) * unit_size, last_y - ((i+1) * unit_size))
+									);
 			this.vertex.push(vertex);						  
 		}
 	}
