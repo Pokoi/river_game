@@ -2,18 +2,35 @@ class RiverBank{
 
 	constructor(_last_vertex = null)
 	{
+	
 		this.vertex       = []               ;
 		this.collider     = null             ;
 		this.active       = true             ;
-		this.height       = 10               ;
+		this.height       = 200              ;
 		this.width        = canvas.width / 3 ;
-		this.random_range = 10               ; 
-
+		this.random_range = this.width * 0.25; 
+		
+		this.AssignEdgeVertex(_last_vertex);
+		this.GenerateInnerFace();
 	}
+
 
 	Draw(ctx)
 	{
-		
+		if(this.active){
+			// draw the collider polygon
+			ctx.strokeStyle = "red";
+			ctx.beginPath();
+			ctx.moveTo(this.vertex[0].x,this.vertex[0].y);
+			for (var i = 1; i < this.vertex.length; i++)
+			{
+				ctx.lineTo(this.vertex[i].x, this.vertex[i].y);
+			}
+			ctx.lineTo(this.vertex[0].x, this.vertex[0].y);
+			ctx.stroke();
+			ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+			ctx.fill();
+		}
 	}
 
 	
@@ -27,8 +44,7 @@ class RiverBank{
 
 		for(let i = 0; i < 3; i++)
 		{
-			let vertex = new Vector2((this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range), 
-									  this.GenerateRandomVertexComponent(last_y, last_y - ((i+1) * unit_size))));
+			let vertex = new Vector2((this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range)), this.GenerateRandomVertexComponent(last_y, last_y - ((i+1) * unit_size)));
 			this.vertex.push(vertex);						  
 		}
 	}
@@ -48,12 +64,12 @@ class RiverBank{
 		
 		//A
 		let a;
-		if(_last_vertex == null || _last_vertex == undefined) { a = new Vector2 (this.width + GenerateRandomVertexComponent(this.random_range, -this.random_range), 0); }
+		if(_last_vertex == null || _last_vertex == undefined) { a = new Vector2 (this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range), 0); }
 		else a = _last_vertex;
 		this.vertex.push(a);
 
 		//B
-		let b = new Vector2(_last_vertex.x - canvas.width, _last_vertex.y); 
+		let b = new Vector2(a.x - canvas.width, a.y); 
 		this.vertex.push(b);
 		
 		//C
@@ -61,14 +77,16 @@ class RiverBank{
 		this.vertex.push(c);
 
 		//D
-		let d = new Vector2(this.width + GenerateRandomVertexComponent(this.random_range, -this.random_range), c.y);
+		let d = new Vector2(this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range), c.y);
 		this.vertex.push(d);
 	}
 
 	/// Send the object to the scene
-	SendToScene()
+	SendToScene(_last_vertex)
 	{
-		this.AssignEdgeVertex()
+		this.AssignEdgeVertex(_last_vertex);
+		this.GenerateInnerFace();	
+		
 	}
 
 	/// Clears the array of vertex
@@ -78,7 +96,10 @@ class RiverBank{
 	SetActive(bool) { this.active = bool; }
 
 	/// Set 
-	FlipRiverBank() { for (let vertex in this.vertex) vertex = new Vector2 (board.width - vertex.x, vertex.y);}
+	FlipRiverBank() { 
+		for (let vertex in this.vertex) 
+		this.vertex[vertex] = new Vector2 (board.width - this.vertex[vertex].x, this.vertex[vertex].y);
+	}
 
 	//SetPolygon
 }

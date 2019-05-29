@@ -51,11 +51,12 @@ function Start ()
 
     // ------------------------------------------------
     // CANVAS
-
     ResizeCanvas();
 
-
-
+    // ------------------------------------------------
+    // BOARD
+    board = new Board();
+    board.Start();
     // ------------------------------------------------
     // BOAT
 
@@ -80,6 +81,8 @@ function Update (deltaTime)
     world.Step(deltaTime, 8, 3);
     world.ClearForces();
 
+    board.Update(deltaTime);
+
     boat.Update(deltaTime);
 
     input.postUpdate();
@@ -89,6 +92,8 @@ function Draw ()
 {
     // clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    board.Draw(ctx);
 
     // Transform the canvas coordinates to cartesians coordinates
     ctx.save();
