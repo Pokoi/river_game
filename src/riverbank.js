@@ -5,18 +5,23 @@ class RiverBank{
 		this.vertex       = []               ;
 		this.collider     = null             ;
 		this.active       = true             ;
-		this.height       = canvas.height /2 ;
+		this.height       = canvas.height /10 ;
 		this.width        = canvas.width / 3 ;
 		this.random_range = this.width * 0.35; 
 		this.center       = null;
+		this.body         = null;
 		
 		this.AssignEdgeVertex(_last_vertex);
-		this.GenerateInnerFace();
+		this.SetCenter();
 	}
 
-	Start(){ this.SetCenter(); }
+	Start(){}
 
-	Update(){if(this.IntersectsWith(boat) != false) console.log("intersects");}
+	Update(){
+		if(this.active && boat.body.GetPosition().y * scale > this.vertex[0].y && boat.body.GetPosition().y * scale < this.vertex[3].y ) 
+		if(this.DistancePointToSegment(this.vertex[0], this.vertex[3], new Vector2(boat.body.GetPosition().x * scale, boat.body.GetPosition().y * scale)) < 0.5)
+		 console.log("touching");
+	}
 
 	Draw(ctx)
 	{
@@ -39,21 +44,6 @@ class RiverBank{
 	/// Generate a random integer between a min and max numbers
 	GenerateRandomVertexComponent(min, max) { return Math.floor(Math.random() * (max - min))+(min); }
 
-	/// Generate the inner face 
-	GenerateInnerFace() 
-	{
-		let last_y = this.vertex[this.vertex.length-1].y;
-		let unit_size = (last_y - this.vertex[0].y) * 0.33;
-
-		for(let i = 0; i < 3; i++)
-		{
-			let vertex = new Vector2((this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range)), 
-									this.GenerateRandomVertexComponent(last_y - (i) * unit_size, last_y - ((i+1) * unit_size))
-									);
-			this.vertex.push(vertex);						  
-		}
-	}
-
 	/// Send to the pool of object 
 	SendToPool() { this.SetActive(true);}
 
@@ -64,8 +54,8 @@ class RiverBank{
 		//  C ---------- D
 		//  |           /
 		//  |          /
-		//  |          \
-		//  B ---------- A
+		//  |         / 
+		//  B -------A
 		//-----------------------
 		
 		//A
@@ -90,8 +80,7 @@ class RiverBank{
 	/// Send the object to the scene
 	SendToScene(_last_vertex)
 	{
-		this.AssignEdgeVertex(_last_vertex);
-		this.GenerateInnerFace();			
+		this.AssignEdgeVertex(_last_vertex);			
 	}
 
 	/// Clears the array of vertex
@@ -106,183 +95,7 @@ class RiverBank{
 	/// Set the center of the riverbank
 	SetCenter(){ this.center = new Vector2(this.vertex[1].x + this.height * 0.5, this.vertex[1].y + this.height * 0.5); }
 
-	//-----------------------------------------------------------------------------------------
-	/// Methods from MattiasBuelens
-	/// Avalaible in: http://jsfiddle.net/MattiasBuelens/9FAGJ/
-
-	/*
-     *  This function returns true if the given point is inside the polygon,
-     *  and false otherwise.
-     */
-	ContainsPoint(point)
-	{
-		var nvert = this.vertex.length;
-		var testx = point.x;
-		var testy = point.y;
-
-		var vertx = new Array();
-    	for (var q = 0; q < this.vertex.length; q++) {
-    		vertx.push(this.vertex[q].x + this.center.x);
-    	}
-    	
-    	var verty = new Array();
-    	for (var w = 0; w < this.vertex.length; w++) {
-    		verty.push(this.vertex[w].y + this.center.y);
-    	}
-
-    	var i, j = 0;
-    	var c = false;
-    	for (i = 0, j = nvert - 1; i < nvert; j = i++) {
-    		if ( ((verty[i]>testy) != (verty[j]>testy)) &&
-    				(testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
-    			c = !c;
-    	}
-    	return c;
-	}
-
-	
-	/*
-     *  To detect intersection with another Polygon object, this
-     *  function uses the Separating Axis Theorem. It returns false
-     *  if there is no intersection, or an object if there is. The object
-     *  contains 2 fields, overlap and axis. Moving the polygon by overlap
-     *  on axis will get the polygons out of intersection.
-     */
-	IntersectsWith(other)
-	{
-		var axis = new Vector2(0,0);
-    	var tmp, minA, maxA, minB, maxB;
-    	var side, i;
-    	var smallest = null;
-    	var overlap = 99999999;
-
-    	// test polygon A's sides 
-    	for (side = 0; side < this.vertex.length; side++)
-    	{
-    		// get the axis that we will project onto 
-    		if (side == 0)
-    		{
-    			axis.x = this.vertex[this.vertex.length - 1].y - this.vertex[0].y;
-    			axis.y = this.vertex[0].x - this.vertex[this.vertex.length - 1].x;
-    		}
-    		else
-    		{
-    			axis.x = this.vertex[side - 1].y - this.vertex[side].y;
-    			axis.y = this.vertex[side].x - this.vertex[side - 1].x;
-    		}
-
-    		// normalize the axis
-    		tmp = Math.sqrt(axis.x * axis.x + axis.y * axis.y);
-    		axis.x /= tmp;
-    		axis.y /= tmp;
-
-    		// project polygon A onto axis to determine the min/max 
-    		minA = maxA = this.vertex[0].x * axis.x + this.vertex[0].y * axis.y;
-    		for (i = 1; i < this.vertex.length; i++)
-    		{
-    			tmp = this.vertex[i].x * axis.x + this.vertex[i].y * axis.y;
-    			if (tmp > maxA)
-    				maxA = tmp;
-    			else if (tmp < minA)
-    				minA = tmp;
-			}
-			
-    		// correct for offset 
-    		tmp = this.center.x * axis.x + this.center.y * axis.y;
-    		minA += tmp;
-    		maxA += tmp;
-
-    		// project polygon B onto axis to determine the min/max 
-    		minB = maxB = other.vertex[0].x * axis.x + other.vertex[0].y * axis.y;
-    		for (i = 1; i < other.vertex.length; i++)
-    		{
-    			tmp = other.vertex[i].x * axis.x + other.vertex[i].y * axis.y;
-    			if (tmp > maxB)
-    				maxB = tmp;
-    			else if (tmp < minB)
-    				minB = tmp;
-			}
-			
-    		// correct for offset 
-    		tmp = other.body.GetPosition().x * axis.x + other.body.GetPosition().y * axis.y;
-    		minB += tmp;
-    		maxB += tmp;
-
-    		// test if lines intersect, if not, return false 
-    		if (maxA < minB || minA > maxB) {
-    			return false;
-    		} else {
-    			var o = (maxA > maxB ? maxB - minA : maxA - minB);
-    			if (o < overlap) {
-    				overlap = o;
-    			    smallest = {x: axis.x, y: axis.y};
-    			}
-    		}
-    	}
-
-    	// test polygon B's sides 
-    	for (side = 0; side < other.vertex.length; side++)
-    	{
-    		// get the axis that we will project onto 
-    		if (side == 0)
-    		{
-    			axis.x = other.vertex[other.vertex.length - 1].y - other.vertex[0].y;
-    			axis.y = other.vertex[0].x - other.vertex[other.vertex.length - 1].x;
-    		}
-    		else
-    		{
-    			axis.x = other.vertex[side - 1].y - other.vertex[side].y;
-    			axis.y = other.vertex[side].x - other.vertex[side - 1].x;
-    		}
-
-    		// normalize the axis 
-    		tmp = Math.sqrt(axis.x * axis.x + axis.y * axis.y);
-    		axis.x /= tmp;
-    		axis.y /= tmp;
-
-    		// project polygon A onto axis to determine the min/max 
-    		minA = maxA = this.vertex[0].x * axis.x + this.vertex[0].y * axis.y;
-    		for (i = 1; i < this.vertex.length; i++)
-    		{
-    			tmp = this.vertex[i].x * axis.x + this.vertex[i].y * axis.y;
-    			if (tmp > maxA)
-    				maxA = tmp;
-    			else if (tmp < minA)
-    				minA = tmp;
-    		}
-    		// correct for offset 
-    		tmp = this.center.x * axis.x + this.center.y * axis.y;
-    		minA += tmp;
-    		maxA += tmp;
-
-    		// project polygon B onto axis to determine the min/max 
-    		minB = maxB = other.vertex[0].x * axis.x + other.vertex[0].y * axis.y;
-    		for (i = 1; i < other.vertex.length; i++)
-    		{
-    			tmp = other.vertex[i].x * axis.x + other.vertex[i].y * axis.y;
-    			if (tmp > maxB)
-    				maxB = tmp;
-    			else if (tmp < minB)
-    				minB = tmp;
-    		}
-    		// correct for offset 
-    		tmp = other.body.GetPosition().x * axis.x + other.body.GetPosition().y * axis.y;
-    		minB += tmp;
-    		maxB += tmp;
-
-    		// test if lines intersect, if not, return false 
-    		if (maxA < minB || minA > maxB) {
-    			return false;
-    		} else {
-    			var o = (maxA > maxB ? maxB - minA : maxA - minB);
-    			if (o < overlap) {
-    				overlap = o;
-    			    smallest = {x: axis.x, y: axis.y};
-    			}
-    		}
-    	}
-
-    	return {"overlap": overlap + 0.001, "axis": smallest};
-	}
+	/// Returns the distance between a given point and the segment between the two given points
+	DistancePointToSegment (A, B, p) { return Math.abs((((B.x - A.x)*(A.y - p.y) - (A.x - p.x)*(B.y - A.y)) /(Math.sqrt((B.x - A.x)*(B.x - A.x) + (B.y - A.y)*(B.y - A.y)))));}
 	
 }
