@@ -1,12 +1,12 @@
 class Camera
 {
-    constructor (player)
+    constructor (boat)
     {
-        this.player = player;
-        this.offset = {x: 0, y: 0};
-        this.position = {x: 0, y: 0};
-        this.min_y = 0;
-        this.max_y = 100;
+        this.player   = boat;
+        this.offset   = new Vector2 (0,0);
+        this.position = new Vector2 (0,0);
+        this.min_y    = 0;
+        this.max_y    = 100;
         
     }
 

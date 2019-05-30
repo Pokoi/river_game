@@ -18,6 +18,8 @@ class Boat {
 
 		this.left_input            = _left_input  ;
 		this.right_input           = _right_input ;
+
+		this.vertex                = []           ;
 	} 
 
 	/// At the first frame of this object
@@ -28,6 +30,7 @@ class Boat {
 
 		this.InitializeDirectorBody();
 		this.InitializeEngineBody();
+		this.SetVertex();
 	}
 
 	/// Paint the object into the canvas
@@ -37,10 +40,10 @@ class Boat {
 
 	/// Method called every frame
 	Update(delta_time)
-	{
-
+	{		
 		this.BoatRotation();
 		this.BoatMovement();
+		this.SetVertex();
 	}
 
 	//=============================================================================
@@ -76,6 +79,38 @@ class Boat {
 		this.engine_body.joint     = world.CreateJoint(back_joint_def);
 		
 		this.bodies.push(this.engine_body);
+	}
+
+	/// Set the outter vertex of the body
+	SetVertex()
+	{
+		//----------------
+		//   c ----- d
+		//   |       |
+		//   |   x   |
+		//   |       |
+		//   b ----- a
+
+		let half_width  = ((this.width * scale)  * 0.5);
+		let half_height = ((this.height * scale) * 0.5);
+		let center      = new Vector2(this.body.GetPosition().x * scale, this.body.GetPosition().y * scale);
+		this.vertex     = [];
+
+		//a
+		let a = new Vector2(center.x + half_width, center.y - half_height);
+		this.vertex.push(a);
+
+		//b
+		let b = new Vector2(center.x - half_width, a.y);
+		this.vertex.push(b);
+
+		//c
+		let c = new Vector2(b.x, center.y + half_height);
+		this.vertex.push(c); 
+
+		//d 
+		let d = new Vector2(a.x, c.y);
+		this.vertex.push(d);
 	}
 
 	//=============================================================================

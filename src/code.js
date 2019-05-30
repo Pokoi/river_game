@@ -87,6 +87,7 @@ function Update (deltaTime)
     world.Step(deltaTime, 8, 3);
     world.ClearForces();  
 
+    board.Update(deltaTime);
     boat.Update(deltaTime);
     camera.Update(deltaTime);
 
@@ -98,13 +99,13 @@ function Draw ()
 {
     // clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);    
-    
+      
     board.Draw(ctx);
 
     // camera transform: translate
     ctx.save();
-    ctx.translate(-camera.position.x, -camera.position.y);    
-      
+    ctx.translate(-camera.position.x, -camera.position.y); 
+   
 
     // Transform the canvas coordinates to cartesians coordinates
     ctx.save();
