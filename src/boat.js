@@ -156,4 +156,9 @@ class Boat {
 			current_body.ApplyForce(force_direction, current_body.GetPosition());
 		}		
 	}
+
+	//=============================================================================
+	// FORCES
+
+	ApplyForce(director){/* TODO */}
 }

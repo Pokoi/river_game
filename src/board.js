@@ -12,7 +12,13 @@ class Board{
                 
     }
 
-    Start(){this.GenerateBoardTiles(); for(let river_bank in this.river_bank_collection) this.river_bank_collection[river_bank].Start();}
+    Start()
+    {
+        this.GenerateBoardTiles(); 
+        for(let river_bank in this.river_bank_collection) this.river_bank_collection[river_bank].Start();
+
+        //TODO Generate river obstacles
+    }
 
     ///Generate the board tiles 
     GenerateBoardTiles() { for(let iterator = 0; iterator < this.number_of_instances; iterator++) { this.GenerateTile(false); this.GenerateTile(true);} }

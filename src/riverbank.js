@@ -18,9 +18,20 @@ class RiverBank{
 	Start(){}
 
 	Update(){
-		if(this.active && boat.body.GetPosition().y * scale > this.vertex[0].y && boat.body.GetPosition().y * scale < this.vertex[3].y ) 
-		if(this.DistancePointToSegment(this.vertex[0], this.vertex[3], new Vector2(boat.body.GetPosition().x * scale, boat.body.GetPosition().y * scale)) < 0.5)
-		 console.log("touching");
+		if(this.active)
+		{
+			for(var point in boat.vertex)
+			{
+				if(this.DistancePointToSegment(this.vertex[0], this.vertex[3], boat.vertex[point]) < 0.5)
+				{
+					boat.ApplyForce(boat.vertex[point]-(boat.body.GetPosition() * scale));
+					console.log("touching");
+				}
+				
+			}
+		} 
+		
+		 
 	}
 
 	Draw(ctx)
