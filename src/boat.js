@@ -93,7 +93,7 @@ class Boat {
 
 		let half_width  = ((this.width * scale)  * 0.5);
 		let half_height = ((this.height * scale) * 0.5);
-		let center      = new Vector2(this.body.GetPosition().x * scale, this.body.GetPosition().y * scale);
+		let center      = new Vector2(this.body.GetPosition().x * scale, canvas.height - this.body.GetPosition().y * scale);
 		this.vertex     = [];
 
 		//a

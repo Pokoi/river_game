@@ -10,6 +10,9 @@ class RiverBank{
 		this.random_range = this.width * 0.35; 
 		this.center       = null;
 		this.body         = null;
+		this.fill_color   = null;
+		this.normal_color = 'rgba(255, 255, 255, 0.1)';
+		this.touched_color = 'rgba(255, 0, 0, 0.5)';
 		
 		this.AssignEdgeVertex(_last_vertex);
 		this.SetCenter();
@@ -20,18 +23,20 @@ class RiverBank{
 	Update(){
 		if(this.active)
 		{
+			var a = false;
 			for(var point in boat.vertex)
 			{
-				if(this.DistancePointToSegment(this.vertex[0], this.vertex[3], boat.vertex[point]) < 0.5)
+				if(this.DistancePointToSegment(this.vertex[0], this.vertex[3], boat.vertex[point]) < 1)
 				{
 					boat.ApplyForce(boat.vertex[point]-(boat.body.GetPosition() * scale));
 					console.log("touching");
+					a = true;
 				}
 				
 			}
-		} 
-		
-		 
+			this.fill_color = a ? this.touched_color : this.normal_color;
+			
+		}		 
 	}
 
 	Draw(ctx)
@@ -47,7 +52,7 @@ class RiverBank{
 			}
 			ctx.lineTo(this.vertex[0].x, this.vertex[0].y);
 			ctx.stroke();
-			ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+			ctx.fillStyle = this.fill_color;
 			ctx.fill();
 		}
 	}
@@ -61,17 +66,20 @@ class RiverBank{
 	/// Assign the vertex 
 	AssignEdgeVertex(_last_vertex)
 	{
-		//----------------------
+		//---------------------- 
+		// (x: 0, y: 0)
+		//
 		//  C ---------- D
 		//  |           /
 		//  |          /
 		//  |         / 
 		//  B -------A
+		//
 		//-----------------------
 		
 		//A
 		let a;
-		if(_last_vertex == null || _last_vertex == undefined) { a = new Vector2 (this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range), 0); }
+		if(_last_vertex == null || _last_vertex == undefined) { a = new Vector2 (this.width + this.GenerateRandomVertexComponent(this.random_range, -this.random_range), canvas.height); }
 		else a = _last_vertex;
 		this.vertex.push(a);
 
@@ -80,7 +88,7 @@ class RiverBank{
 		this.vertex.push(b);
 		
 		//C
-		let c = new Vector2(b.x, b.y + this.height);  
+		let c = new Vector2(b.x, b.y - this.height);  
 		this.vertex.push(c);
 
 		//D
@@ -89,10 +97,7 @@ class RiverBank{
 	}
 
 	/// Send the object to the scene
-	SendToScene(_last_vertex)
-	{
-		this.AssignEdgeVertex(_last_vertex);			
-	}
+	SendToScene(_last_vertex) { this.AssignEdgeVertex(_last_vertex);}
 
 	/// Clears the array of vertex
 	ClearVertexCollection() { this.vertex = []; }
@@ -107,6 +112,19 @@ class RiverBank{
 	SetCenter(){ this.center = new Vector2(this.vertex[1].x + this.height * 0.5, this.vertex[1].y + this.height * 0.5); }
 
 	/// Returns the distance between a given point and the segment between the two given points
-	DistancePointToSegment (A, B, p) { return Math.abs((((B.x - A.x)*(A.y - p.y) - (A.x - p.x)*(B.y - A.y)) /(Math.sqrt((B.x - A.x)*(B.x - A.x) + (B.y - A.y)*(B.y - A.y)))));}
+	DistancePointToSegment (A, B, p) 
+	{ 
+		//return Math.abs((((B.x - A.x)*(A.y - p.y) - (A.x - p.x)*(B.y - A.y)) /(Math.sqrt((B.x - A.x)*(B.x - A.x) + (B.y - A.y)*(B.y - A.y)))));
+
+		var l2 = this.dist2(A, B);
+		if(l2 === 0) return this.dist2(p, A);
+
+		var t = ((p.x-A.x)*(B.x-A.x) + (p.y - A.y) * (B.y - A.y)) / l2;
+		t = Math.max(0, Math.min(1,t));
+
+		return Math.sqrt(this.dist2(p, new Vector2(A.x + t * (B.x - A.x), A.y + t * (B.y - A.y))));
+	}
+
+	dist2 (A, B) {return Math.sqrt(A.x - B.x) + Math.sqrt(A.y - B.y);}
 	
 }

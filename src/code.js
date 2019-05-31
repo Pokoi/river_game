@@ -99,13 +99,14 @@ function Draw ()
 {
     // clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);    
-    
-    // draw the tiles
-    board.Draw(ctx);
+      
 
     // camera transform: translate
     ctx.save();
     ctx.translate(-camera.position.x, -camera.position.y);    
+
+    // draw the tiles
+    board.Draw(ctx);
 
     // Transform the canvas coordinates to cartesians coordinates
     //ctx.save();
