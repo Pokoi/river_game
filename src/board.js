@@ -6,7 +6,7 @@ class Board{
         this.height = canvas.height;
 
         this.river_bank_collection      = new Array();
-        this.number_of_instances        = 50;
+        this.number_of_instances        = 1;
         this.left_last_vertex           = null;
         this.right_last_vertex          = null;
                 

@@ -5,7 +5,7 @@ class Boat {
 	{
 		this.img                   = null         ; 
 		this.body                  = null         ; 
-		this.speed                 = 0.5          ;
+		this.speed                 = 0.0          ;
 		this.rotation_speed        = 0.2          ; 
 		this.restore_rotation_speed= 0.4          ;
 

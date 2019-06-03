@@ -13,9 +13,12 @@ class RiverBank{
 		this.fill_color   = null;
 		this.normal_color = 'rgba(255, 255, 255, 0.1)';
 		this.touched_color = 'rgba(255, 0, 0, 0.5)';
+		this.bodyDef       = null;
+		this.fixDef       = null;
 		
 		this.AssignEdgeVertex(_last_vertex);
 		this.SetCenter();
+		this.CreatePhysicBody();
 	}
 
 	Start(){}
@@ -84,7 +87,7 @@ class RiverBank{
 		this.vertex.push(a);
 
 		//B
-		let b = new Vector2(a.x - canvas.width, a.y); 
+		let b = new Vector2(0, a.y); 
 		this.vertex.push(b);
 		
 		//C
@@ -109,7 +112,7 @@ class RiverBank{
 	FlipRiverBank() { for (let vertex in this.vertex) this.vertex[vertex] = new Vector2 (board.width - this.vertex[vertex].x, this.vertex[vertex].y);}
 
 	/// Set the center of the riverbank
-	SetCenter(){ this.center = new Vector2(this.vertex[1].x + this.height * 0.5, this.vertex[1].y + this.height * 0.5); }
+	SetCenter(){ this.center = new Vector2(this.vertex[1].x + this.width * 0.5, this.vertex[1].y - this.height * 0.5); }
 
 	/// Returns the distance between a given point and the segment between the two given points
 	DistancePointToSegment (A, B, p) 
@@ -126,5 +129,35 @@ class RiverBank{
 	}
 
 	dist2 (A, B) {return Math.sqrt(A.x - B.x) + Math.sqrt(A.y - B.y);}
+
+	CreatePhysicBody()
+	{
+
+		this.fixDef = new b2FixtureDef;
+		this.fixDef.density = 1.0;
+		this.fixDef.friction = 0.5;
+		this.fixDef.restitution = 0.2;
+
+		this.bodyDef = new b2BodyDef;
+		this.bodyDef.type = b2Body.b2_staticBody;
+		this.fixDef.shape = new b2PolygonShape;
+
+		// entity.points == [{x: 0, y: 0}, {x: 1, y: 0}, {x: 0, y:2}]
+		var points = [];
+
+		for (var i = this.vertex.length - 1; i >= 0; i--) {
+			var vec = new b2Vec2();
+			vec.Set(this.vertex[i].x / scale, canvas.height-this.vertex[i].y/scale);
+			points[i] = vec;
+		}
+
+		this.fixDef.shape.SetAsArray(points, points.length);
+
+		this.bodyDef.position.x = this.center.x / scale;
+		this.bodyDef.position.y = (canvas.height-(this.center.y)) / scale;
+		world.CreateBody(this.bodyDef).CreateFixture(this.fixDef);
+
+
+	}
 	
 }
