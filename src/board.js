@@ -6,7 +6,7 @@ class Board{
         this.height = canvas.height;
 
         this.river_bank_collection      = new Array();
-        this.number_of_instances        = 1;
+        this.number_of_instances        = 25;
         this.left_last_vertex           = null;
         this.right_last_vertex          = null;
                 
@@ -32,15 +32,17 @@ class Board{
 
         if(fliped)
         {
-            this.right_last_vertex = river_bank.vertex[3];
-            river_bank.FlipRiverBank();
+            this.right_last_vertex = river_bank.chain_position;
+            river_bank.FlipRiverBank();            
         }
-        else {this.left_last_vertex = river_bank.vertex[3];}
+        else {this.left_last_vertex = river_bank.chain_position;}
+
+        river_bank.CreatePhysicBody();
     }
     
     Update(deltaTime){ for(let river_bank in this.river_bank_collection) this.river_bank_collection[river_bank].Update(deltaTime); }
 
-    Draw(ctx){ for(let river_bank in this.river_bank_collection) this.river_bank_collection[river_bank].Draw(ctx);}
+    Draw(ctx){ }
       
 
 }
