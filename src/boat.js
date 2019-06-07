@@ -1,33 +1,35 @@
 class Boat {
 
 	/// Initialization of members
-	constructor(_width, _height, _left_input, _right_input)
+	constructor(_width, _height, _left_input, _right_input, _initial_position)
 	{
-		this.img                   = null         ; 
-		this.body                  = null         ; 
-		this.speed                 = 0.5          ;
-		this.rotation_speed        = 0.2          ; 
-		this.restore_rotation_speed= 0.4          ;
+		this.img                   = null; 
+		this.body                  = null; 
+		this.speed                 = 0.5;
+		this.rotation_speed        = 0.6; 
+		this.restore_rotation_speed= 1.2;
+		this.initial_position      = new Vector2(_initial_position.x,_initial_position.y);
 
-		this.width                 = _width       ;
-		this.height                = _height      ;
+		this.width                 = _width;
+		this.height                = _height;
 
-		this.director_body         = null         ;
-		this.engine_body           = null         ;
-		this.bodies                = []           ;
+		this.director_body         = null;
+		this.engine_body           = null;
+		this.bodies                = [];
 
-		this.left_input            = _left_input  ;
-		this.right_input           = _right_input ;
+		this.left_input            = _left_input;
+		this.right_input           = _right_input;
 
-		this.vertex                = []           ;
+		this.vertex                = [];
+		this.type                 = 'boat';
 	} 
 
 	/// At the first frame of this object
 	Start()
 	{
 		var boat_body_options = {'linearDamping': 10.0, 'angularDamping': 10.0};
-		this.body             = CreateBox(world, canvas.width * 0.5 / scale, 0.75, this.width, this.height, boat_body_options);
-
+		this.body             = CreateBox(world, this.initial_position.x, this.initial_position.y, this.width, this.height, boat_body_options);
+		this.body.m_userData = this;
 		this.InitializeDirectorBody();
 		this.InitializeEngineBody();
 		this.SetVertex();
@@ -161,4 +163,6 @@ class Boat {
 	// FORCES
 
 	ApplyForce(director){/* TODO */}
+
+
 }

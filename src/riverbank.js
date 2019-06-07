@@ -2,17 +2,19 @@ class RiverBank{
 
 	constructor(_last_vertex = null)
 	{
-		this.vertex         = []                ;
-		this.collider       = null              ;
-		this.active         = true              ;
-		this.height         = canvas.height /10 ;
-		this.width          = canvas.width / 3  ;
-		this.random_range   = this.width * 0.35 ; 
-		this.chain_position = null              ;
+		this.vertex         = [];
+		this.collider       = null;
+		this.active         = true;
+		this.height         = canvas.height * 0.2;
+		this.width          = canvas.width * 0.33;
+		this.random_range   = this.width * 0.40; 
+		this.chain_position = null;
 		
-		this.bodyDef        = null              ;
-		this.fixDef         = null              ; 
+		this.bodyDef        = null;
+		this.fixDef         = null; 
 		
+		this.type                  = 'river_bank';
+
 		this.AssignEdgeVertex(_last_vertex);			
 	}
 
@@ -90,7 +92,9 @@ class RiverBank{
 		this.fixDef.restitution = 1;
 
 		this.bodyDef = new b2BodyDef;
+		
 		this.bodyDef.type = b2Body.b2_staticBody;
+		
 		this.fixDef.shape = new b2PolygonShape;
 		
 		var points = [];
@@ -103,8 +107,9 @@ class RiverBank{
 
 		this.fixDef.shape.SetAsArray(points, points.length);
 
-		this.bodyDef.position.Set(0,0);		
+		this.bodyDef.position.Set(0,0);	
 		world.CreateBody(this.bodyDef).CreateFixture(this.fixDef);
+		
 
 
 	}	

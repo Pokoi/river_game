@@ -12,7 +12,14 @@ var board   = null;
 var world   = null;
 var gravity = null;
 var boat    = null;
+var second_boat = null;
 var camera  = null;
+
+var player_one_origin = null; 
+var player_two_origin = null; 
+
+var a = null;
+var b = null;
 
 window.requestAnimationFrame = (function (evt) {
     return window.requestAnimationFrame    ||
@@ -54,6 +61,10 @@ function Start ()
     // CANVAS
     ResizeCanvas();
 
+
+    player_one_origin = new Vector2(canvas.width * 0.6 / scale, 0.75);
+    player_two_origin = new Vector2(canvas.width * 0.4 / scale, 0.75);
+
     // ------------------------------------------------
     // BOARD
     board = new Board();
@@ -61,8 +72,11 @@ function Start ()
 
     // ------------------------------------------------
     // BOAT
-    boat = new Boat(0.1, 0.3, KEY_LEFT, KEY_RIGHT);
+    boat = new Boat(0.1, 0.3, KEY_LEFT, KEY_RIGHT, player_one_origin);
     boat.Start();
+
+    second_boat = new Boat(0.1, 0.3, KEY_A, KEY_D, player_two_origin);
+    second_boat.Start();
 
     // ------------------------------------------------
     // CAMERA
@@ -89,6 +103,7 @@ function Update (deltaTime)
 
     board.Update(deltaTime);
     boat.Update(deltaTime);
+    second_boat.Update(deltaTime);
     camera.Update(deltaTime);
 
 
@@ -130,3 +145,22 @@ function ResizeCanvas()
     canvas.width  = canvas.height * (9/16);
 }
 
+function OnContactDetected(contact){
+    a = contact.GetFixtureA().GetBody();
+    b = contact.GetFixtureB().GetBody();
+
+    console.log(a.GetUserData());
+    console.log(b.GetUserData());
+
+    if(a.type == "boat" && b.type == "obstacle")
+    {
+        console.log("barco choca obstaculo");
+    }
+
+    if(b.type == "boat" && a.type == "river_bank")
+    {
+        console.log("obstaculo choca barco");
+    }
+
+    
+}

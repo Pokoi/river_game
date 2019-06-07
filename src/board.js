@@ -5,10 +5,13 @@ class Board{
         this.width  = canvas.width;
         this.height = canvas.height;
 
-        this.river_bank_collection      = new Array();
-        this.number_of_instances        = 25;
+        this.river_bank_collection      = [];
+        this.number_of_riverbank_instances = 25;
         this.left_last_vertex           = null;
         this.right_last_vertex          = null;
+        
+        this.obstacle_collection        = [];
+        this.number_of_obstacle_instances = 50;
                 
     }
 
@@ -17,13 +20,16 @@ class Board{
         this.GenerateBoardTiles(); 
         for(let river_bank in this.river_bank_collection) this.river_bank_collection[river_bank].Start();
 
-        //TODO Generate river obstacles
+        this.GenerateBoardObstacles();        
     }
 
-    ///Generate the board tiles 
-    GenerateBoardTiles() { for(let iterator = 0; iterator < this.number_of_instances; iterator++) { this.GenerateTile(false); this.GenerateTile(true);} }
+    /// Generate the board tiles 
+    GenerateBoardTiles() { for(let iterator = 0; iterator < this.number_of_riverbank_instances; iterator++) { this.GenerateTile(false); this.GenerateTile(true);} }
     
-    ///Generate a tile
+    /// Generate the obstacles 
+    GenerateBoardObstacles(){for(let iterator = 0; iterator < this.number_of_obstacle_instances; iterator++) { this.GenerateObstacle(false); } }
+
+    /// Generate a tile
     GenerateTile(fliped)
     {
         let last_vertex = fliped ? this.right_last_vertex : this.left_last_vertex;
@@ -39,6 +45,9 @@ class Board{
 
         river_bank.CreatePhysicBody();
     }
+
+    /// Generate an obstacle
+    GenerateObstacle(_static){this.obstacle_collection.push(new Obstacle(_static));}
     
     Update(deltaTime){ for(let river_bank in this.river_bank_collection) this.river_bank_collection[river_bank].Update(deltaTime); }
 

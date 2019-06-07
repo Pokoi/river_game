@@ -111,7 +111,9 @@ function CreateWorld (ctx, gravity)
 {
 	let doSleep = true;
 	world = new b2World(gravity, doSleep);
- 
+	
+	Box2D.Dynamics.b2ContactListener.prototype.BeginContact = OnContactDetected;
+
 	// DebugDraw is used to create the drawing with physics
 	let debugDraw = new b2DebugDraw();
 	debugDraw.SetSprite(ctx);
