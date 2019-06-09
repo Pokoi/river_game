@@ -1,13 +1,28 @@
+//
+// Author: Jesus 'Pokoi' Villar 
+//
+// © pokoidev 2019 (pokoidev.com)
+// Creative Commons License:
+// Attribution 4.0 International (CC BY 4.0)
+//
+
+
+/// This class manages the boat behaviour
 class Boat {
 
-	/// Initialization of members
+	
 	constructor(_width, _height, _left_input, _right_input, _initial_position)
 	{
-		this.img                   = null; 
+		this.img                   = boat_img;
 		this.body                  = null; 
-		this.speed                 = 0.5;
-		this.rotation_speed        = 0.6; 
-		this.restore_rotation_speed= 1.2;
+
+		this.speed                       = 0.0;
+		this.base_speed                  = 0.5;
+		this.rotation_speed              = 0.0;
+		this.base_rotation_speed         = 0.6; 
+		this.restore_rotation_speed      = 0.0;
+		this.base_restore_rotation_speed = 1.2;
+
 		this.initial_position      = new Vector2(_initial_position.x,_initial_position.y);
 
 		this.width                 = _width;
@@ -20,8 +35,8 @@ class Boat {
 		this.left_input            = _left_input;
 		this.right_input           = _right_input;
 
-		this.vertex                = [];
-		this.type                 = 'boat';
+		this.type                  = 'boat';
+
 	} 
 
 	/// At the first frame of this object
@@ -30,25 +45,42 @@ class Boat {
 		var boat_body_options = {'linearDamping': 10.0, 'angularDamping': 10.0};
 		this.body             = CreateBox(world, this.initial_position.x, this.initial_position.y, this.width, this.height, boat_body_options);
 		this.body.m_userData = this;
+
 		this.InitializeDirectorBody();
-		this.InitializeEngineBody();
-		this.SetVertex();
+		this.InitializeEngineBody();		
 	}
 
-	/// Paint the object into the canvas
+	/// Render method
 	Draw(ctx)
 	{	
+		let body_position = this.body.GetPosition();
+        var angle = this.body.GetAngle();
+
+        ctx.save();
+        
+        ctx.translate(body_position.x * scale, canvas.height - body_position.y * scale);
+        ctx.rotate(-angle);       
+
+        ctx.drawImage(this.img, -this.width * scale, -this.height * scale, this.width * scale * 2, this.height * scale * 2);
+        
+		ctx.restore();
+
 	} 
 
 	/// Method called every frame
 	Update(delta_time)
-	{		
+	{
+		let modificator = (game.time_played/30);
+
+		this.speed                  = this.base_speed + modificator;
+		this.rotation_speed         = this.base_rotation_speed + modificator;
+		this.restore_rotation_speed = this.base_restore_rotation_speed + modificator;
+
 		this.BoatRotation();
 		this.BoatMovement();
-		this.SetVertex();
 	}
 
-	//=============================================================================
+	//------------------------------------------------------------------------------
 	// INITIALIZATION OF VALUES
 
 	/// Initialization of the parameters of the director body
@@ -81,41 +113,9 @@ class Boat {
 		this.engine_body.joint     = world.CreateJoint(back_joint_def);
 		
 		this.bodies.push(this.engine_body);
-	}
+	}	
 
-	/// Set the outter vertex of the body
-	SetVertex()
-	{
-		//----------------
-		//   c ----- d
-		//   |       |
-		//   |   x   |
-		//   |       |
-		//   b ----- a
-
-		let half_width  = ((this.width * scale)  * 0.5);
-		let half_height = ((this.height * scale) * 0.5);
-		let center      = new Vector2(this.body.GetPosition().x * scale, canvas.height - this.body.GetPosition().y * scale);
-		this.vertex     = [];
-
-		//a
-		let a = new Vector2(center.x + half_width, center.y - half_height);
-		this.vertex.push(a);
-
-		//b
-		let b = new Vector2(center.x - half_width, a.y);
-		this.vertex.push(b);
-
-		//c
-		let c = new Vector2(b.x, center.y + half_height);
-		this.vertex.push(c); 
-
-		//d 
-		let d = new Vector2(a.x, c.y);
-		this.vertex.push(d);
-	}
-
-	//=============================================================================
+	//------------------------------------------------------------------------------
 	// ROTATION AND MOVEMENT
 
 	/// Calculate and apply the rotation of the boat
@@ -159,10 +159,5 @@ class Boat {
 		}		
 	}
 
-	//=============================================================================
-	// FORCES
-
-	ApplyForce(director){/* TODO */}
-
-
+	
 }

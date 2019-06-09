@@ -109,7 +109,7 @@ function CreateBall (world, x, y, radius, options)
 // Create a Box2D world object
 function CreateWorld (ctx, gravity)
 {
-	let doSleep = true;
+	let doSleep = false;
 	world = new b2World(gravity, doSleep);
 	
 	Box2D.Dynamics.b2ContactListener.prototype.BeginContact = OnContactDetected;

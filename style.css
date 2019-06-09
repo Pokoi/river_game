@@ -3,12 +3,80 @@
     padding:0;
     list-style:none;
     text-decoration:none;
+    font-family: 'Anton', sans-serif;
+}
+
+#container {
+    background-color: rgba(218, 235, 242, 1);
 }
 
 #my_canvas {
-    border-style: solid;
-    border-width: 1px;
+    z-index: 1;
+    border: none;
     display: block;
     margin: 0 auto;
+}
+
+#menu, #endgame, #data_table{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(205, 230, 245, 1);
+    padding-top: 15%;
+}
+
+#playbutton, #showhs, #menubutton, #loginbutton, #end_text, #table, #back{
+    position: relative;
+    width: 100vw;
+    padding: 5% auto;
+    background: none;
+    color: rgba(155, 211, 277, 1);
+    font-size: 5vw;
+    border: none;
+    text-align: center;
+}
+
+th {
+    background: rgba(155, 211, 277, 1);
+    color: white;
+}
+
+td{
+    font-size: 3vw;
+}
+
+#end_text{
+    color: white;
+}
+
+#playbutton:hover, #showhs:hover, #menubutton:hover, #loginbutton:hover, #back:hover{
+    background: rgba(155, 211, 277, 1);
+    color: rgba(218, 235, 242, 1);
+    font-size: 7vw;
+    border: none;
+    text-align: center;
+}
+
+#hud{
+
+   position: absolute;
+   width: 100vw;
+   margin: 0 auto;
+   z-index: 3;
+}
+
+#speed, #points, #lifes{
+
+    text-align: center;
+    background-color: rgba(218, 235, 242, 0.8);
+    color: black;
+
+    font-size: 1em;
+}
+
+#life_1, #life_2, #life_3{
+    margin: "0px 10px 0px 0px";
+    width: 30px;
+    height: 30px;
 }
 

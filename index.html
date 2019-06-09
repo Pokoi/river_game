@@ -6,32 +6,69 @@
     <title>River Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Anton&display=swap" rel="stylesheet">
 </head>
-<body >
-
-    <!--
-    <button id="loginbutton" onclick="userLogin()">login</button>
-    <button id="logoutbutton" style="display:none" onclick="userLogout()">logout</button>
-    -->
+<body >    
 
     <div id="container">
-        <canvas id="my_canvas" width="640" height="640"></canvas>
+        <div id="menu" style="display:none">
+                <button id="playbutton">Play</button>
+                <button id="showhs">Show High Scores</button>
+
+                <div id="data_table" style="display:none">
+                    <button id="back">Back to menu</button>
+                        <table id="table">
+                            <tr>
+                                <th> Name</td>
+                                <th> Score</td>
+                            </tr>
+                        </table>
+                </div>
+        </div>       
+
+        <div id="hud" style="display:none">        
+            <p id="speed">Boat speed</p>
+            <p id="points" >Points</p>
+            <div id="lifes">
+                <img src="assets/heart.png"  id="life_1" />
+                <img src="assets/heart.png"  id="life_2" />
+                <img src="assets/heart.png"  id="life_3" />
+            </div>                
+        </div> 
+
+        <div id="endgame" style="display:none">
+            <p id="end_text"></p>
+            <button id="menubutton">Back to menu</button>
+            <button id="loginbutton">Submit score</button>        
+        </div> 
+
+        <canvas id="my_canvas" width="500" height="900"></canvas>
+
+        <audio id="plastic_hit" src="./Sounds/plastic_hit.wav" style="display: block;"></audio>
+        <audio id="seal_hit" src="./Sounds/seal_hit.wav" style="display: block;"></audio>
+        <audio id="damage" src="./Sounds/damage.wav" style="display:block;"></audio>
+        <audio id="music" src="./Sounds/music.wav" style="display: block;"></audio>
     </div>
 
     <script src="./src/input.js"></script>
-    <script src="./src/vector2.js"></script>    
+    <script src="./src/vector2.js"></script>
     <script src="./src/Box2D.js"></script>
     <script src="./src/physics.js"></script>
     <script src="./src/riverbank.js"></script>
     <script src="./src/board.js"></script>
+    <script src="./src/sensor.js"></script>  
     <script src="./src/boat.js"></script>
     <script src="./src/obstacle.js"></script>
     <script src="./src/camera.js"></script>
+    <script src="./src/score_manager.js"></script>
+    <script src="./src/menu.js"></script>
+    <script src="./src/game.js"></script>
+    <script src="./src/end_game.js"></script>
     <script src="./src/code.js"></script>
 
 
         <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/6.1.1/firebase-app.js"></script>
 
     <!-- TODO: Add SDKs for Firebase products that you want to use
         https://firebase.google.com/docs/web/setup#config-web-app -->
@@ -39,79 +76,23 @@
         <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-auth.js"></script>
         <script src="https://www.gstatic.com/firebasejs/6.0.4/firebase-database.js"></script>
 
-    <script>
+        <script>
 
-        var loginButton = document.getElementById("loginbutton");
-        var logoutButton = document.getElementById("logoutbutton");
+            var firebaseConfig = {
+                apiKey: "AIzaSyB_08i0C1Jin5Zc8YbbckKnOIlApCQWdjo",
+                authDomain: "nombreproyecto-3be10.firebaseapp.com",
+                databaseURL: "https://nombreproyecto-3be10.firebaseio.com",
+                projectId: "nombreproyecto-3be10",
+                storageBucket: "nombreproyecto-3be10.appspot.com",
+                messagingSenderId: "47281181389",
+                appId: "1:47281181389:web:8102a68fc9fcbb3d"
+            };
 
-    // Your web app's Firebase configuration
-    var firebaseConfig = {
-        apiKey: "AIzaSyB_08i0C1Jin5Zc8YbbckKnOIlApCQWdjo",
-        authDomain: "nombreproyecto-3be10.firebaseapp.com",
-        databaseURL: "https://nombreproyecto-3be10.firebaseio.com",
-        projectId: "nombreproyecto-3be10",
-        storageBucket: "nombreproyecto-3be10.appspot.com",
-        messagingSenderId: "47281181389",
-        appId: "1:47281181389:web:8102a68fc9fcbb3d"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
 
-    var provider = new firebase.auth.GoogleAuthProvider();
-
-    function userLogin(){
-        
-        firebase.auth().signInWithPopup(provider).then(function (result){
-
-            var token = result.credential.accesToken;
-            var user = result.user;
-            loginButton.style.display  = "none";
-            logoutButton.style.display = "block";
-        }).catch(function (error){
-            
-            var errorCode = error.code;
-            var errorMessage = error.message;
-
-            var email = error.email;
-
-            var credential = error.credential;
-        })
-    }
-
-    function userLogout(){
-        firebase.auth().signOut().then(function(){
-            loginButton.style.display  = "block";
-            logoutButton.style.display = "none";
-
-        }).catch(function(error){
-            
-            
-        });
-    }
-
-    function getScores(){
-        firebase.database().ref('/scores/' + "Manolo").once ('value').then(function(snapshot) {
-            var score = snapshot.val();
-        });
-    }
-
-    function addNewScore(userName, score){
-        firebase.database().ref('scores' + userName).set({
-            score: score
-        });
-    }
-
-    function checkForChanges(){
-        var newPos = firebase.database().ref('pos/playerA/position');
-        newPos.on('value', function(snapshot) {
-        console.log(snapshot.val());
-        });
-    }
-
-    
-
-
-    </script>
-
-</body>
+            var provider = new firebase.auth.GoogleAuthProvider();
+         
+        </script>
+    </body>
 </html>

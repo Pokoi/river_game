@@ -1,34 +1,48 @@
+//
+// Author: Jesus 'Pokoi' Villar 
+//
+// © pokoidev 2019 (pokoidev.com)
+// Creative Commons License:
+// Attribution 4.0 International (CC BY 4.0)
+//
+
+/// This class manages the tiles
 class RiverBank{
 
 	constructor(_last_vertex = null)
 	{
 		this.vertex         = [];
-		this.collider       = null;
-		this.active         = true;
 		this.height         = canvas.height * 0.2;
-		this.width          = canvas.width * 0.33;
+		this.width          = canvas.width * 0.25;
 		this.random_range   = this.width * 0.40; 
 		this.chain_position = null;
 		
 		this.bodyDef        = null;
 		this.fixDef         = null; 
 		
-		this.type                  = 'river_bank';
+		this.type           = 'river_bank';
 
 		this.AssignEdgeVertex(_last_vertex);			
 	}
 
-	Start(){}
-
-	Update(){}
-
-	Draw(ctx){}
+	/// Render method
+	Draw(ctx)
+	{
+		ctx.strokeStyle = 'rgba(218, 235, 242, 0.35)';
+		ctx.beginPath();
+		ctx.moveTo(this.vertex[0].x, this.vertex[0].y);
+		for (var i = 1; i < this.vertex.length; i++)
+		{
+			ctx.lineTo(this.vertex[i].x, this.vertex[i].y);
+		}
+		ctx.lineTo(this.vertex[0].x, this.vertex[0].y);
+		ctx.stroke();
+		ctx.fillStyle = 'rgba(218, 235, 242, 0.8)';
+		ctx.fill();
+	}
 	
 	/// Generate a random integer between a min and max numbers
 	GenerateRandomVertexComponent(min, max) { return Math.floor(Math.random() * (max - min))+(min); }
-
-	/// Send to the pool of object 
-	SendToPool() { this.SetActive(true);}
 
 	/// Assign the vertex 
 	AssignEdgeVertex(_last_vertex)
@@ -68,17 +82,11 @@ class RiverBank{
 		this.vertex.push(a);		
 	}
 
-	/// Send the object to the scene
-	SendToScene(_last_vertex) { this.AssignEdgeVertex(_last_vertex);}
-
 	/// Clears the array of vertex
 	ClearVertexCollection() { this.vertex = []; }
 
-	/// Set the active status of the object
-	SetActive(bool) { this.active = bool; }
-
 	/// Flip the tile
-	FlipRiverBank() { for (let vertex in this.vertex) this.vertex[vertex] = new Vector2 (board.width - this.vertex[vertex].x, this.vertex[vertex].y); this.ReverseVertexCollection();}
+	FlipRiverBank() { for (let vertex in this.vertex) this.vertex[vertex] = new Vector2 (game.board.width - this.vertex[vertex].x, this.vertex[vertex].y); this.ReverseVertexCollection();}
 
 	/// Reverse the order of the vertex in the array
 	ReverseVertexCollection(){this.vertex = this.vertex.reverse();}
@@ -87,14 +95,14 @@ class RiverBank{
 	CreatePhysicBody()
 	{
 		this.fixDef = new b2FixtureDef;
-		this.fixDef.density = 8.0;
-		this.fixDef.friction = 0.5;
-		this.fixDef.restitution = 1;
+		this.fixDef.density = 100;
+		this.fixDef.friction = 0;
+		this.fixDef.restitution = 0;
 
 		this.bodyDef = new b2BodyDef;
 		
 		this.bodyDef.type = b2Body.b2_staticBody;
-		
+		this.bodyDef.userData = this;
 		this.fixDef.shape = new b2PolygonShape;
 		
 		var points = [];
@@ -109,8 +117,5 @@ class RiverBank{
 
 		this.bodyDef.position.Set(0,0);	
 		world.CreateBody(this.bodyDef).CreateFixture(this.fixDef);
-		
-
-
 	}	
 }

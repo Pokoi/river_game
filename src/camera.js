@@ -1,12 +1,20 @@
+//
+// Author: Jesus 'Pokoi' Villar 
+//
+// © pokoidev 2019 (pokoidev.com)
+// Creative Commons License:
+// Attribution 4.0 International (CC BY 4.0)
+//
+
+
+/// This class manages the camera
 class Camera
 {
     constructor (boat)
     {
         this.player   = boat;
         this.offset   = new Vector2 (0,0);
-        this.position = new Vector2 (0,0); 
-        this.min_y = 0;
-        this.max_y = 800;            
+        this.position = new Vector2 (0,0);           
     }
 
     Start()
